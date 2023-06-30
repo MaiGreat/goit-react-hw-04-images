@@ -15,6 +15,7 @@ export const App = () => {
   const [modalImg, setModalImg] = useState(null);
   const [modalAlt, setModalAlt] = useState(null);
 
+useEffect(() => {
   const getImages = async () => {
     setIsLoading(true);
     try {
@@ -33,6 +34,10 @@ export const App = () => {
     }
   };
 
+  getImages();
+}, [query, page]);
+
+
   const onSubmit = (value) => {
     setQuery(value);
     setPage(1);
@@ -43,9 +48,6 @@ export const App = () => {
     setPage((prevPage) => prevPage + 1);
   };
 
-  useEffect(() => {
-    getImages();
-  }, [query, page]);
 
   const getLargeImageURL = (largeImg, alt) => {
     setModalImg(largeImg);
