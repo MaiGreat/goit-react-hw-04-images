@@ -6,6 +6,7 @@ import { Button } from "./Button/Button";
 import { Loader } from "./Loader/Loader";
 import { Modal } from "./Modal/Modal";
 
+
 export const App = () => {
   const [query, setQuery] = useState("");
   const [images, setImages] = useState([]);
@@ -14,29 +15,30 @@ export const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalImg, setModalImg] = useState(null);
   const [modalAlt, setModalAlt] = useState(null);
+  const [error, setError] = useState(null);
 
-useEffect(() => {
-  const getImages = async () => {
-    setIsLoading(true);
-    try {
-      const { hits, totalHits } = await fetchImages(query, page);
+  useEffect(() => {
+    const getImages = async () => {
+      setIsLoading(true);
+      try {
+        const { hits, totalHits } = await fetchImages(query, page);
 
-      if (images.length === 0) {
-        setImages(hits);
-      } else {
-        setImages((prevImages) => [...prevImages, ...hits]);
+        if (hits.length === 0) {
+          setImages(hits);
+        } else {
+          setImages((prevImages) => [...prevImages, ...hits]);
+        }
+        setTotalHits(totalHits);
+      } catch (error) {
+        setError(error);
+        console.error("Error fetching images:", error);
+      } finally {
+        setIsLoading(false);
       }
-      setTotalHits(totalHits);
-    } catch (error) {
-      console.error("Error fetching images:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  getImages();
-}, [query, page]);
-
+    getImages();
+  }, [query, page]);
 
   const onSubmit = (value) => {
     setQuery(value);
@@ -47,7 +49,6 @@ useEffect(() => {
   const onLoadMore = () => {
     setPage((prevPage) => prevPage + 1);
   };
-
 
   const getLargeImageURL = (largeImg, alt) => {
     setModalImg(largeImg);
@@ -65,10 +66,10 @@ useEffect(() => {
       {images.length > 0 && (
         <ImageGallery images={images} onImageClick={getLargeImageURL} />
       )}
+      {error && <p>Error fetching images</p>}
       {isLoading && <Loader />}
       {totalHits > images.length && <Button onClick={onLoadMore} />}
       {modalImg && <Modal largeImg={modalImg} alt={modalAlt} onClose={closeModal} />}
     </div>
   );
 };
-
