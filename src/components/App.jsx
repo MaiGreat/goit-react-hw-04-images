@@ -36,8 +36,10 @@ export const App = () => {
         setIsLoading(false);
       }
     };
-
-    getImages();
+    if(query) {
+      getImages();
+    }
+    
   }, [query, page]);
 
   const onSubmit = (value) => {
@@ -68,7 +70,7 @@ export const App = () => {
       )}
       {error && <p>Error fetching images</p>}
       {isLoading && <Loader />}
-      {totalHits > images.length && <Button onClick={onLoadMore} />}
+      {totalHits > images.length &&!isLoading && images.length > 0 &&<Button onClick={onLoadMore} />}
       {modalImg && <Modal largeImg={modalImg} alt={modalAlt} onClose={closeModal} />}
     </div>
   );
